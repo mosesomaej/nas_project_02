@@ -66,6 +66,7 @@ resource "aws_security_group" "nas_frontend_alb_sg" {
   tags = {
     Name = "Loadbalancer_fe"
     Tier = "frontend_alb"
+    Env = "dev"
   }
 }
 # DATABASE 
