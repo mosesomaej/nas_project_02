@@ -17,7 +17,8 @@ provider "aws" {
   region      = "us-east-1"
   alias = "use1"
 }
-# SECUERITY GROUPS - PRIVATE AND PUBLIC..
+# SECUERITY GROUPS - PRIVATE AND PUBLIC
+# DATABASE 
 # VPC CREATE
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
