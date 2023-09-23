@@ -15,18 +15,16 @@ terraform {
 
 provider "aws" {
   region      = "us-east-1"
-  alias = "use1"
+  alias       = "use1"
 }
-# SECUERITY GROUPS - PRIVATE AND PUBLIC
-# DATABASE 
-# VPC CREATE
+
 module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
-  providers = {
-    aws = aws.use1
+  source      = "terraform-aws-modules/vpc/aws"
+  providers   = {
+    aws       = aws.use1
   }
-  name = "nas_vpc"
-  cidr = "10.50.0.0/16"
+  name        = "nas_vpc"
+  cidr        = "10.50.0.0/16"
 
   azs             = ["us-east-1a", "us-east-1b", "us-east-1c"]
   private_subnets = ["10.50.1.0/24", "10.50.2.0/24", "10.50.3.0/24"]
@@ -42,6 +40,33 @@ module "vpc" {
   }
 }
 
-resource "aws_security_group" "nas_frontend_sg" {
-  
+# SECUERITY GROUPS - PRIVATE AND PUBLIC
+resource "aws_security_group" "nas_frontend_alb_sg" {
+  name        = "nas_frontend_alb_sg"
+  description = "Allow TLS inbound traffic"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description      = "Allow traffic from public to frontend loadbalancer"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = [module.vpc.vpc_cidr_block]
+    # ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    # ipv6_cidr_blocks = ["::/0"]
+  }
+
+  tags = {
+    Name = "Loadbalancer_fe"
+    Tier = "frontend_alb"
+  }
 }
+# DATABASE 
+# VPC CREATE
