@@ -18,7 +18,7 @@ provider "aws" {
   alias = "use1"
 }
 
-# VPC CREATE
+# VPC CREATE AND OTEHRS
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
   providers = {
