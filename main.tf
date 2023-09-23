@@ -17,8 +17,8 @@ provider "aws" {
   region      = "us-east-1"
   alias = "use1"
 }
-
-# VPC CREATE AND OTEHRS
+# SECUERITY GROUPS - PRIVATE AND PUBLIC
+# VPC CREATE
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
   providers = {
