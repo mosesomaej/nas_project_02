@@ -41,6 +41,15 @@ module "vpc" {
   }
 }
 
+# creating engineering subnet for maintainance purpose
+resource "aws_subnet" "engineering_subnets" {
+  vpc_id     = module.vpc.vpc_id
+  cidr_block      = "10.50.7.0/24"
+
+  tags = {
+    Name = "Engineering_subnet"
+  }
+}
 # SECUERITY GROUPS - PRIVATE AND PUBLIC
 # Engineering Team security Group - this will allow only members of the team to have ssh access to others servers
 resource "aws_security_group" "engineering_team_sg" {
