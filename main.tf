@@ -12,7 +12,7 @@ terraform {
     }
 }
 }
-#
+
 provider "aws" {
   region      = "us-east-1"
   alias       = "use1"
@@ -142,7 +142,7 @@ resource "aws_security_group" "nas_frontend_web_sg" {
   }
 
   ingress {
-    description      = "Allow ssh traffic cidr block"
+    description      = "Allow engineering team to ssh into webservers for maintenance purpose"
     from_port        = 22
     to_port          = 22
     protocol         = "tcp"
@@ -162,6 +162,60 @@ resource "aws_security_group" "nas_frontend_web_sg" {
     Name = "Loadbalancer_fe"
     Tier = "frontend_alb"
     Env = "dev"
+  }
+}
+# Backend Application Load Balancer Security Group
+resource "aws_security_group" "nas_backend_alb_sg" {
+  name        = "nas_backend_alb_sg"
+  description = "Allow TLS inbound traffic"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description      = "Allow http traffic from public to frontend loadbalancer"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = ["10.50.0.0/16"]
+  # ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
+  }
+  
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    # ipv6_cidr_blocks = ["::/0"]
+  }
+
+  tags = {
+    Name = "Loadbalancer_backend"
+    Tier = "backend_alb"
+    Env = "dev"
+  }
+}
+
+# Backend Application Load Balancer Security Group
+resource "aws_security_group" "nas_backend_web_sg" {
+  name        = "nas_backend_web_sg"
+  description = "Allow TLS inbound traffic from backend loadbalancer"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description      = "Allow https traffic from frontend loadbalancer"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    security_groups = [aws_security_group.nas_backend_alb_sg.id]
+    # ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
+  }
+
+  ingress {
+    description      = "Allow engineering team to ssh into webservers"
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    security_groups = [aws_security_group.engineering_team_sg.id]
+    # ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
   }
 }
 # DATABASE
