@@ -43,7 +43,7 @@ module "vpc" {
 
 # creating engineering subnet for maintainance purpose
 resource "aws_subnet" "engineering_subnets" {
-  vpc_id     = module.vpc.vpc_id
+  vpc_id          = module.vpc.vpc_id
   cidr_block      = "10.50.7.0/24"
 
   tags = {
@@ -222,4 +222,86 @@ resource "aws_security_group" "nas_backend_web_sg" {
     Env = "dev"
   }
 }
-# DATABASE
+# Relational Database Security Group
+resource "aws_security_group" "nas_rds_sg" {
+  name        = "nas_rds_sg"
+  description = "Allow TLS inbound traffic from backend webserver"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description      = "Allow https traffic from frontend loadbalancer"
+    from_port        = 3306
+    to_port          = 3306
+    protocol         = "tcp"
+    security_groups = [aws_security_group.nas_backend_web_sg.id, aws_security_group.nas_frontend_web_sg.id]
+    # ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
+  }
+
+  tags = {
+    Name = "Database_sg"
+    Tier = "backend"
+    Env = "dev"
+  }
+}
+
+# Database Subnet Group
+resource "aws_db_subnet_group" "nas_db_subnet_group" {
+  name       = "nas_dev_db_subnet_group"
+  subnet_ids = [module.vpc.private_subnets[*]]
+  # subnet_ids = [module.vpc.private_subnets[0], module.vpc.private_subnets[1], module.vpc.private_subnets[2]]
+
+  tags = {
+    Name = "DB subnet group"
+  }
+}
+
+# Elastic File System Security Group
+resource "aws_security_group" "nas_efs_sg" {
+  name        = "nas_efs_sg"
+  description = "Allow TLS inbound traffic from frontend and backend webservers"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description      = "Allow https traffic from frontend and backend webservers"
+    from_port        = 2049
+    to_port          = 2049
+    protocol         = "tcp"
+    security_groups = [aws_security_group.nas_frontend_web_sg.id, aws_security_group.nas_backend_web_sg.id]
+    # ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
+  }
+
+  tags = {
+    Name = "Webserver_backend_sg"
+    Tier = "backend"
+    Env = "dev"
+  }
+}
+
+# Auditor Security Group
+# resource "aws_security_group" "nas_auditor_sg" {
+#   name        = "nas_auditor_sg"
+#   description = "Allow TLS inbound traffic from auditors network"
+#   vpc_id      = module.vpc.vpc_id
+
+#   ingress {
+#     description      = "Allow https traffic from auditors"
+#     from_port        = 80
+#     to_port          = 80
+#     protocol         = "tcp"
+#     cidr_blocks      = [module.vpc]
+#     # ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
+#   }
+#   egress {
+#     from_port        = 0
+#     to_port          = 0
+#     protocol         = "-1"
+#     cidr_blocks      = ["0.0.0.0/0"]
+#     # ipv6_cidr_blocks = ["::/0"]
+#   }
+
+#   tags = {
+#     Name = "Webserver_backend_sg"
+#     Tier = "backend"
+#     Env = "dev"
+#   }
+# }
