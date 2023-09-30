@@ -48,6 +48,7 @@ resource "aws_subnet" "engineering_subnets" {
 
   tags = {
     Name = "Engineering_subnet"
+    Tier = "backend"
   }
 }
 # SECUERITY GROUPS - PRIVATE AND PUBLIC
@@ -80,6 +81,11 @@ resource "aws_security_group" "engineering_team_sg" {
     protocol         = "-1"
     cidr_blocks      = ["0.0.0.0/0"]
     # ipv6_cidr_blocks = ["::/0"]
+  }
+  tags = {
+    Name = "Engineering_team_sg"
+    Tier = "backend"
+    Env = "dev"
   }
 }
 # Frontend LoadBalancer
@@ -121,8 +127,8 @@ resource "aws_security_group" "nas_frontend_alb_sg" {
   }
 
   tags = {
-    Name = "Loadbalancer_fe"
-    Tier = "frontend_alb"
+    Name = "Loadbalancer_frondend_sg"
+    Tier = "frontend"
     Env = "dev"
   }
 }
@@ -159,8 +165,8 @@ resource "aws_security_group" "nas_frontend_web_sg" {
   }
 
   tags = {
-    Name = "Loadbalancer_fe"
-    Tier = "frontend_alb"
+    Name = "Webserver_frondend_sg"
+    Tier = "frontend"
     Env = "dev"
   }
 }
@@ -188,8 +194,8 @@ resource "aws_security_group" "nas_backend_alb_sg" {
   }
 
   tags = {
-    Name = "Loadbalancer_backend"
-    Tier = "backend_alb"
+    Name = "Loadbalancer_backend_sg"
+    Tier = "backend"
     Env = "dev"
   }
 }
@@ -216,6 +222,11 @@ resource "aws_security_group" "nas_backend_web_sg" {
     protocol         = "tcp"
     security_groups = [aws_security_group.engineering_team_sg.id]
     # ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
+  }
+  tags = {
+    Name = "Webserver_backend_sg"
+    Tier = "backend"
+    Env = "dev"
   }
 }
 # DATABASE
