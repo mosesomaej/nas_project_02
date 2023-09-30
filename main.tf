@@ -247,8 +247,7 @@ resource "aws_security_group" "nas_rds_sg" {
 # Database Subnet Group
 resource "aws_db_subnet_group" "nas_db_subnet_group" {
   name       = "nas_dev_db_subnet_group"
-  subnet_ids = [module.vpc.private_subnets[*]]
-  # subnet_ids = [module.vpc.private_subnets[0], module.vpc.private_subnets[1], module.vpc.private_subnets[2]]
+  subnet_ids = [module.vpc.private_subnets[0], module.vpc.private_subnets[1], module.vpc.private_subnets[2]]
 
   tags = {
     Name = "DB subnet group"
