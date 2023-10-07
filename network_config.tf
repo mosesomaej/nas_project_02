@@ -205,11 +205,11 @@ resource "aws_security_group" "nas_backend_web_sg" {
 # Relational Database Security Group
 resource "aws_security_group" "nas_rds_sg" {
   name        = "nas_rds_sg"
-  description = "Allow TLS inbound traffic from backend webserver" # and frontend webserver?
+  description = "Allow TLS inbound traffic from backend webserver" 
   vpc_id      = module.vpc.vpc_id
 
   ingress {
-    description      = "Allow https traffic from frontend loadbalancer" # is it not from frontend and backend webservers?
+    description      = "Allow https traffic from frontend loadbalancer" 
     from_port        = 3306
     to_port          = 3306
     protocol         = "tcp"
@@ -219,7 +219,7 @@ resource "aws_security_group" "nas_rds_sg" {
 
   tags = {
     Name = "Database_sg"
-    Tier = "backend" # How about frontend?
+    Tier = "backend" 
     Env = "dev"
   }
 }
