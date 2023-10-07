@@ -271,7 +271,8 @@ resource "aws_launch_template" "nas_frontend_lt" {
   key_name      = aws_key_pair.frontend.key_name
   vpc_security_group_ids = [ aws_security_group.nas_frontend_web_sg.id ]
   iam_instance_profile {
-    name = "aws_iam_instance_profile.ec2_instance_profile.name"
+    name = "EC2_SSM_Instance_Profile"
+    # name = aws_iam_instance_profile.ec2_instance_profile.name
   }
   user_data = filebase64("${path.module}/frontenduserdata.sh")
   tag_specifications {
