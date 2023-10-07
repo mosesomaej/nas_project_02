@@ -5,12 +5,12 @@ terraform {
       version = "5.17.0"
     }
   }
-  cloud {
-    organization = "NAS_Financial"
-    workspaces {
-    name = "terraform-vpc-nasproject"
-    }
-}
+#   cloud {
+#     organization = "NAS_Financial"
+#     workspaces {
+#     name = "terraform-vpc-nasproject"
+#     }
+# }
 }
 
 provider "aws" {
