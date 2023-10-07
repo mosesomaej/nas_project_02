@@ -207,19 +207,19 @@ resource "aws_security_group" "nas_rds_sg" {
   name        = "nas_rds_sg"
   description = "Allow TLS inbound traffic from backend webserver" 
   vpc_id      = module.vpc.vpc_id
-
+  
   ingress {
-    description      = "Allow https traffic from frontend loadbalancer" 
-    from_port        = 3306
-    to_port          = 3306
-    protocol         = "tcp"
-    security_groups = [aws_security_group.nas_backend_web_sg.id, aws_security_group.nas_frontend_web_sg.id]
-    # ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
-  }
-
+  description      = "Allow https traffic from frontend loadbalancer"
+  from_port        = 3306
+  to_port          = 3306
+  protocol         = "tcp"
+  security_groups = [aws_security_group.nas_backend_web_sg.id, aws_security_group.nas_frontend_web_sg.id]
+  # ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
+}
+ 
   tags = {
     Name = "Database_sg"
-    Tier = "backend" 
+    Tier = "backend"
     Env = "dev"
   }
 }
