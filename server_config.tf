@@ -88,7 +88,7 @@ resource "aws_lb_target_group" "nas_frontend_tg" {
     # interval            = 30
     protocol            = "HTTP"  # "HTTPS"
     path                = "/"
-    matcher             = "200"
+    matcher             = "200,202,301,302,402"
     healthy_threshold   = 2
     unhealthy_threshold = 2
     timeout             = 5
