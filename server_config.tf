@@ -264,6 +264,8 @@ resource "local_file" "frontend" {
 
 # create Frontend Launch Template 
 resource "aws_launch_template" "nas_frontend_lt" {
+  # depends_on = [aws_rds_cluster.nas-db]
+  depends_on = [aws_efs_file_system.nas_efs]  
   name = "nas_frontend_lt"
   description = "launch template for frontend web servers"
   image_id = data.aws_ami.linux_ami.id  
@@ -310,4 +312,22 @@ resource "aws_autoscaling_group" "nas_frontend_asg" {
   lifecycle {
     create_before_destroy = true
   }
+}
+
+# ============DATABASES==============
+resource "aws_rds_cluster" "nas-db" {
+  # cluster_identifier        = nas-db1
+  database_name             = "customerInfo"
+  availability_zones        = ["us-east-1a", "us-east-1b", "us-east-1c"]
+  engine                    = "mysql"
+  db_cluster_instance_class = "db.r5d.large"
+  storage_type              = "io1"
+  allocated_storage         = 100
+  iops                      = 1000
+  master_username           = ""
+  master_password           = ""
+  skip_final_snapshot       = true
+  vpc_security_group_ids    = [aws_security_group.nas_rds_sg.id]
+  db_subnet_group_name      = aws_db_subnet_group.nas_db_subnet_group.name
+  
 }
