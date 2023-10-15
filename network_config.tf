@@ -14,12 +14,58 @@ module "vpc" {
   enable_nat_gateway = true
   single_nat_gateway = false
   one_nat_gateway_per_az = false
+  map_public_ip_on_launch = true
 
    tags = {
     Terraform = "true"
     Environment = "dev"
   }
 }
+# =============TO BE VISITED LATER================
+# resource "aws_network_interface" "nas_public_interface1" {
+#   subnet_id   = "module.vpc.public_subnets[0].id"
+# }
+
+# resource "aws_network_interface" "nas_public_interface2" {
+#   subnet_id   = "module.vpc.public_subnets[1].id"
+# }
+
+# resource "aws_network_interface" "nas_public_interface3" {
+#   subnet_id   = "module.vpc.public_subnets[2].id"
+# }
+
+# resource "aws_eip" "nas_one" {
+#   domain                    = "vpc"
+#   network_interface         = aws_network_interface.nas_public_interface1.id
+#   # associate_with_private_ip = ""
+# }
+
+# resource "aws_eip" "nas_two" {
+#   domain                    = "vpc"
+#   network_interface         = aws_network_interface.nas_public_interface2.id
+#   # associate_with_private_ip = ""
+# }
+
+# resource "aws_eip" "nas_three" {
+#   domain                    = "vpc"
+#   network_interface         = aws_network_interface.nas_public_interface3.id
+#   # associate_with_private_ip = ""
+# }
+
+# resource "aws_eip_association" "eip_assoc1" {
+#   network_interface_id = aws_network_interface.nas_public_interface1.id
+#   allocation_id = aws_eip.nas_one.id
+# }
+
+# resource "aws_eip_association" "eip_assoc2" {
+#   network_interface_id = aws_network_interface.nas_public_interface2.id
+#   allocation_id = aws_eip.nas_two.id
+# }
+
+# resource "aws_eip_association" "eip_assoc3" {
+#   network_interface_id = aws_network_interface.nas_public_interface3.id
+#   allocation_id = aws_eip.nas_three.id
+# }
 
 # creating engineering subnet for maintainance purpose
 resource "aws_subnet" "engineering_subnets" {
@@ -128,7 +174,15 @@ resource "aws_security_group" "nas_frontend_web_sg" {
     security_groups = [aws_security_group.engineering_team_sg.id]
     # ipv6_cidr_blocks = [aws_vpc.main.ipv6_cidr_block]
   }
-  
+  ingress {
+    description      = "Allow http traffic from the frontend loadbalancer"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    security_groups = [aws_security_group.nas_frontend_alb_sg.id]
+    
+  }
+
   egress {
     from_port        = 0
     to_port          = 0
@@ -284,3 +338,5 @@ resource "aws_security_group" "nas_efs_sg" {
 #     Env = "dev"
 #   }
 # }
+
+
